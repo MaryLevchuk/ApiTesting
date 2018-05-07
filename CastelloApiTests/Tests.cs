@@ -4,26 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Castello.ClientRequest;
+using RestSharp;
 
-namespace CastelloApiTests
+namespace Castello.ApiTests
 {
     public class Tests
     {
+        public RDBRequests RdbApi = new RDBRequests();
+        public RecipePageRequests Page = new RecipePageRequests();
+
+
         public Tests()
         {
-            int recipesNumber = GetRecipesFromRdbByListId(string listID);
-            int pageSize = 6;
-            int recipesRemaider = recipesNumber % pageSize;
-            int numberOfPages = recipesRemaider != 0 ? recipesNumber / pageSize + 1 : recipesNumber / pageSize;
         }
 
         [Test]
-        public void PaginationReturnsRecipes(int maxPages)
+        public void EachPageReturnsRecipes()
         {
-            https://castello-tie.cmsstage.com/en/api/recipes/search/?pageNumber=currentPageNumber
+            var recipesNumberFromRdb = RdbApi.GetNumberOfRecipesInInstance();
+            int pageSize = 6;
+            int numberOfPages = Page.GetNumberOfPagesByNumberOfRecipesAndPageSize(recipesNumberFromRdb, pageSize);
 
-
+            for (int i = 1; i <= numberOfPages; i++)
+            {
+                var recipesOnCurrentPage = Page.GetNumberOfRecipesFromCurrentPage(i);
+                Assert.AreNotEqual(0, recipesOnCurrentPage);
+            }
+         
         }
 
     }
 }
+
